@@ -33,4 +33,6 @@ jobs:
       - name: Authenticate with Yandex Cloud
         run: |
           export PATH="$HOME/yandex-cloud/bin:$PATH"
-          yc config set service-account-key ${GITHUB_WORKSPACE}/terraform/key.json
+          yc config set service-account-key ${GITHUB_WORKSPACE}/terraform/keys/key.json
+          yc config set ${{ secrets.cloud_id }}
+          yc config set folder-id ${{ secrets.folder_id }}
