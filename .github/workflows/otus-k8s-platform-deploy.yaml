@@ -1,0 +1,36 @@
+name: Otus Kubernetes Platform deploy
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    env:
+      TF_VAR_cloud_id: ${{ secrets.cloud_id }}
+      TF_VAR_folder_id: ${{ secrets.folder_id }}
+      TF_VAR_sa_id: ${{ secrets.service_account_id }}
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3  
+        
+      - name: Decode Service Account Key and save as key.json
+        working-directory: terraform
+        run: |
+          echo "${{ secrets.SERVICE_ACCOUNT_KEY }}" | base64 -d > ./keys/key.json
+          
+      - name: Install Yandex Cloud CLI
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+          echo "$HOME/yandex-cloud/bin" >> $GITHUB_PATH
+          
+      - name: Authenticate with Yandex Cloud
+        run: |
+          export PATH="$HOME/yandex-cloud/bin:$PATH"
+          yc config set service-account-key ${GITHUB_WORKSPACE}/terraform/key.json
