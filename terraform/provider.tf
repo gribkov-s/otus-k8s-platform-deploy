@@ -13,7 +13,7 @@ terraform {
 
 provider "yandex" {
   zone = "ru-central1-d"
-  folder_id = variable.folder_id
+  folder_id = var.folder_id
   service_account_key_file = "./keys/key.json"
 }
 

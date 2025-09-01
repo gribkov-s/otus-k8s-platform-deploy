@@ -86,8 +86,8 @@ resource "yandex_kubernetes_cluster" "otus_k8s_platform_deploy_cluster" {
     version   = "1.32"
     security_group_ids = [yandex_vpc_security_group.k8s_sg.id]
   }
-  service_account_id = variable.service_account_id
-  node_service_account_id = variable.service_account_id
+  service_account_id = var.service_account_id
+  node_service_account_id = var.service_account_id
 }
 
 # 5. Группа узлов для инфраструктуры
@@ -187,7 +187,7 @@ resource "yandex_vpc_address" "otus_k8s_platform_deploy_ingress_ip" {
 
 # 8.1 Access_key для доступа к хранилищу
 resource "yandex_iam_service_account_static_access_key" "otus_k8s_platform_deploy_logs_storage_sa_access" {
-  service_account_id = variable.service_account_id
+  service_account_id = var.service_account_id
 }
 
 # 8.2 Storage bucket
