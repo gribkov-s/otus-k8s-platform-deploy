@@ -13,8 +13,8 @@ resource "yandex_vpc_subnet" "otus_k8s_platform_deploy_subnet" {
 }
 
 # 3. Группа безопасности (облачный файрвол)
-resource "yandex_vpc_security_group" "k8s_sg" {
-  name       = "k8s-security-group"
+resource "yandex_vpc_security_group" "otus_k8s_platform_deploy_sg" {
+  name       = "otus-k8s-platform-deploy-security-group"
   network_id = yandex_vpc_network.otus_k8s_platform_deploy_network.id
 
   # Правило, разрешающее весь трафик внутри этой группы безопасности.
@@ -84,7 +84,7 @@ resource "yandex_kubernetes_cluster" "otus_k8s_platform_deploy_cluster" {
     }
     public_ip = true
     version   = "1.32"
-    security_group_ids = [yandex_vpc_security_group.k8s_sg.id]
+    security_group_ids = [yandex_vpc_security_group.otus_k8s_platform_deploy_sg.id]
   }
   service_account_id = var.service_account_id
   node_service_account_id = var.service_account_id
