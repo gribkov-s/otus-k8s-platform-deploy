@@ -43,3 +43,9 @@ jobs:
         working-directory: terraform
         run: |
           ssh-keygen -t ed25519 -f ./keys/ssh_node_group_key  -q -N ""
+         
+      - name: Terraform Init & Apply
+        working-directory: terraform
+        run: |
+          terraform init
+          terraform apply -auto-approve
