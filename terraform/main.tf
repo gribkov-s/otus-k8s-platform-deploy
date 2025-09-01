@@ -111,7 +111,7 @@ resource "yandex_kubernetes_node_group" "otus_k8s_platform_deploy_infra_node_gro
     }
     network_interface {
       subnet_ids = [yandex_vpc_subnet.otus_k8s_platform_deploy_subnet.id]
-      security_group_ids = [yandex_vpc_security_group.k8s_sg.id]
+      security_group_ids = [yandex_vpc_security_group.otus_k8s_platform_deploy_sg.id]
       nat = true
     }
     metadata = {
@@ -155,7 +155,7 @@ resource "yandex_kubernetes_node_group" "otus_k8s_platform_deploy_workload_node_
     }
     network_interface {
       subnet_ids = [yandex_vpc_subnet.otus_k8s_platform_deploy_subnet.id]
-      security_group_ids = [yandex_vpc_security_group.k8s_sg.id]
+      security_group_ids = [yandex_vpc_security_group.otus_k8s_platform_deploy_sg.id]
       nat = true
     }
     metadata = {
