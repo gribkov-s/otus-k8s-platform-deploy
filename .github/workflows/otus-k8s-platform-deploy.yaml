@@ -38,3 +38,8 @@ jobs:
           yc config set service-account-key ${GITHUB_WORKSPACE}/terraform/keys/key.json
           yc config set cloud-id ${{ secrets.cloud_id }}
           yc config set folder-id ${{ secrets.folder_id }}
+          
+      - name: Generate ssh key for k8s nodes
+        working-directory: terraform
+        run: |
+          ssh-keygen -t ed25519 -f ./keys/ssh_node_group_key  -q -N ""
