@@ -22,10 +22,9 @@ jobs:
         
       - name: Decode Service Account Key and save as key.json
         working-directory: terraform
-        uses: jsdaniell/create-json@1.1.2
-        with:
-          name: "key.json"
-          json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+        run: |
+          mkdir keys
+          echo "${{ secrets.SERVICE_ACCOUNT_KEY }}" | base64 -d > ./keys/key.json
           
       - name: Install Yandex Cloud CLI
         run: |
@@ -35,6 +34,6 @@ jobs:
       - name: Authenticate with Yandex Cloud
         run: |
           export PATH="$HOME/yandex-cloud/bin:$PATH"
-          yc config set service-account-key ${GITHUB_WORKSPACE}/terraform/key.json
+          yc config set service-account-key ${GITHUB_WORKSPACE}/terraform/keys/key.json
           yc config set ${{ secrets.cloud_id }}
           yc config set folder-id ${{ secrets.folder_id }}
