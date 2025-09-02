@@ -21,8 +21,8 @@ resource "kubernetes_manifest" "microservices_demo_project" {
   manifest = yamldecode(file("./argocd-apps/microservices-demo-appproject.yaml"))
   
   depends_on = [
-    helm_release.otus_k8s_platform_deploy_argo_cd,
-    kubernetes_namespace.otus_k8s_platform_deploy_microservices_demo_namespace
+	kubernetes_namespace.otus_k8s_platform_deploy_microservices_demo_namespace,
+    helm_release.otus_k8s_platform_deploy_argo_cd
   ]
 }
 
