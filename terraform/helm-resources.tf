@@ -85,7 +85,7 @@ resource "helm_release" "otus_k8s_platform_deploy_loki" {
   create_namespace = true
   
   values = [templatefile("./helm/loki-values.yaml", {
-    bucket_name = yandex_storage_bucket.otus_k8s_deploy_platform_logs_storage.bucket
+    bucket_name = yandex_storage_bucket.otus_k8s_platform_deploy_logs_storage.bucket
 	access_key_id = yandex_iam_service_account_static_access_key.otus_k8s_platform_deploy_logs_storage_sa_access.access_key
 	secret_access_key = yandex_iam_service_account_static_access_key.otus_k8s_platform_deploy_logs_storage_sa_access.secret_key
   })]
