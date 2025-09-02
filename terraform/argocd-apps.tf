@@ -11,8 +11,8 @@ resource "kubernetes_namespace" "otus_k8s_platform_deploy_microservices_demo_nam
   }
   
   depends_on = [
-    yandex_kubernetes_node_group.otus_k8s_platform_deploy_workload_node_group,
-	null_resource.generate_kubeconfig
+    null_resource.generate_kubeconfig,
+    yandex_kubernetes_node_group.otus_k8s_platform_deploy_workload_node_group
   ]
 }
 
@@ -21,8 +21,7 @@ resource "kubernetes_manifest" "microservices_demo_project" {
   manifest = yamldecode(file("./argocd-apps/microservices-demo-appproject.yaml"))
   
   depends_on = [
-	kubernetes_namespace.otus_k8s_platform_deploy_microservices_demo_namespace,
-    helm_release.otus_k8s_platform_deploy_argo_cd
+	kubernetes_namespace.otus_k8s_platform_deploy_microservices_demo_namespace
   ]
 }
 
