@@ -120,8 +120,8 @@ resource "helm_release" "otus_k8s_platform_deploy_loki" {
   })]
   
   depends_on = [
-    helm_release.otus_k8s_platform_deploy_ingress_nginx,
-	yandex_storage_bucket.otus_k8s_platform_deploy_logs_storage
+    yandex_storage_bucket.otus_k8s_platform_deploy_logs_storage,
+    helm_release.otus_k8s_platform_deploy_ingress_nginx
   ]
 }
 
