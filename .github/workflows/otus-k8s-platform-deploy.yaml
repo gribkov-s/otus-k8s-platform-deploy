@@ -55,10 +55,10 @@ jobs:
           terraform apply -auto-approve
           
       - name: Copy kubeconfig
-        working-directory: terraform/cluster
+        working-directory: terraform
         run: |
-          cp terraform/cluster/kubeconfig.yaml terraform/infra
-          cp terraform/cluster/kubeconfig.yaml terraform/workload
+          cp kubeconfig.yaml /infra
+          cp kubeconfig.yaml /workload
           
       - name: Deploy infrastructure with Terraform
         working-directory: terraform/infra

@@ -178,7 +178,7 @@ resource "yandex_kubernetes_node_group" "otus_k8s_platform_deploy_workload_node_
 resource "null_resource" "generate_kubeconfig" {
   provisioner "local-exec" {
     command = <<EOT
-      yc managed-kubernetes cluster get-credentials --id ${yandex_kubernetes_cluster.otus_k8s_platform_deploy_cluster.id} --external --kubeconfig=./kubeconfig.yaml --force
+      yc managed-kubernetes cluster get-credentials --id ${yandex_kubernetes_cluster.otus_k8s_platform_deploy_cluster.id} --external --kubeconfig=../kubeconfig.yaml --force
     EOT
   }
 
