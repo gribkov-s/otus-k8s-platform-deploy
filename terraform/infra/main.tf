@@ -1,4 +1,37 @@
 
+# I. Yandex Cloud resources
+
+# 1. IP адрес для Ingress
+resource "yandex_vpc_address" "otus_k8s_platform_deploy_ingress_ip" {
+  name = "otus-k8s-platform-deploy-ingress-ip"
+
+  external_ipv4_address {
+    zone_id = "ru-central1-a"
+  }
+}
+
+# 2. Хранилище логов
+
+# 2.1 Access_key для доступа к хранилищу
+resource "yandex_iam_service_account_static_access_key" "otus_k8s_platform_deploy_logs_storage_sa_access" {
+  service_account_id = var.service_account_id
+}
+
+# 2.2 Storage bucket
+resource "yandex_storage_bucket" "otus_k8s_platform_deploy_logs_storage" {
+  bucket = "otus-k8s-platform-deploy-logs-storage"
+  access_key = yandex_iam_service_account_static_access_key.otus_k8s_platform_deploy_logs_storage_sa_access.access_key
+  secret_key = yandex_iam_service_account_static_access_key.otus_k8s_platform_deploy_logs_storage_sa_access.secret_key
+
+  anonymous_access_flags {
+    read = false
+    list = false
+  }
+}
+
+
+# II. Helm resources
+
 # 1. Ingress контроллер
 resource "helm_release" "otus_k8s_platform_deploy_ingress_nginx" {
   name = "otus-k8s-platform-deploy-ingress-nginx"
@@ -13,8 +46,6 @@ resource "helm_release" "otus_k8s_platform_deploy_ingress_nginx" {
   })]
   
   depends_on = [
-    null_resource.generate_kubeconfig,
-    yandex_kubernetes_node_group.otus_k8s_platform_deploy_infra_node_group,
 	yandex_vpc_address.otus_k8s_platform_deploy_ingress_ip
   ]
 }
@@ -33,8 +64,7 @@ resource "helm_release" "otus_k8s_platform_deploy_argo_cd" {
   values = [file("./helm/argocd-values.yaml")]
   
   depends_on = [
-    null_resource.generate_kubeconfig,
-    yandex_kubernetes_node_group.otus_k8s_platform_deploy_infra_node_group
+    helm_release.otus_k8s_platform_deploy_ingress_nginx
   ]
 }
 
@@ -46,7 +76,6 @@ resource "kubernetes_ingress_v1" "otus_k8s_platform_deploy_argo_cd_ingress" {
   }
   
   depends_on = [
-    helm_release.otus_k8s_platform_deploy_ingress_nginx,
 	helm_release.otus_k8s_platform_deploy_argo_cd
   ]
 
@@ -91,8 +120,7 @@ resource "helm_release" "otus_k8s_platform_deploy_loki" {
   })]
   
   depends_on = [
-    null_resource.generate_kubeconfig,
-    yandex_kubernetes_node_group.otus_k8s_platform_deploy_infra_node_group,
+    helm_release.otus_k8s_platform_deploy_ingress_nginx,
 	yandex_storage_bucket.otus_k8s_platform_deploy_logs_storage
   ]
 }
@@ -109,8 +137,7 @@ resource "helm_release" "otus_k8s_platform_deploy_promtail" {
   values = [file("./helm/promtail-values.yaml")]
 
   depends_on = [
-    null_resource.generate_kubeconfig,
-    yandex_kubernetes_node_group.otus_k8s_platform_deploy_infra_node_group
+    helm_release.otus_k8s_platform_deploy_loki
   ]
 }
 
@@ -128,8 +155,7 @@ resource "helm_release" "otus_k8s_platform_deploy_kube_prometheus_stack" {
   values = [file("./helm/kube-prometheus-stack-values.yaml")]
 
   depends_on = [
-    null_resource.generate_kubeconfig,
-	yandex_kubernetes_node_group.otus_k8s_platform_deploy_infra_node_group
+    helm_release.otus_k8s_platform_deploy_ingress_nginx
   ]
 }
 
@@ -141,7 +167,6 @@ resource "kubernetes_ingress_v1" "otus_k8s_platform_deploy_grafana_ingress" {
   }
   
   depends_on = [
-    helm_release.otus_k8s_platform_deploy_ingress_nginx,
     helm_release.otus_k8s_platform_deploy_kube_prometheus_stack
   ]
 
@@ -175,7 +200,6 @@ resource "kubernetes_ingress_v1" "otus_k8s_platform_deploy_prometheus_ingress" {
   }
   
   depends_on = [
-    helm_release.otus_k8s_platform_deploy_ingress_nginx,
     helm_release.otus_k8s_platform_deploy_kube_prometheus_stack
   ]
 
@@ -209,7 +233,6 @@ resource "kubernetes_ingress_v1" "otus_k8s_platform_deploy_alertmanager_ingress"
   }
   
   depends_on = [
-    helm_release.otus_k8s_platform_deploy_ingress_nginx,
     helm_release.otus_k8s_platform_deploy_kube_prometheus_stack
   ]
 
@@ -234,3 +257,4 @@ resource "kubernetes_ingress_v1" "otus_k8s_platform_deploy_alertmanager_ingress"
     }
   }
 }
+

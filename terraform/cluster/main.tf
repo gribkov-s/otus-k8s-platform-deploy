@@ -6,9 +6,9 @@ resource "yandex_vpc_network" "otus_k8s_platform_deploy_network" {
 
 # 2. Подсеть
 resource "yandex_vpc_subnet" "otus_k8s_platform_deploy_subnet" {
-  name           = "otus-k8s-platform-deploy-subnet-a"
-  zone           = "ru-central1-a"
-  network_id     = yandex_vpc_network.otus_k8s_platform_deploy_network.id
+  name = "otus-k8s-platform-deploy-subnet-a"
+  zone = "ru-central1-a"
+  network_id = yandex_vpc_network.otus_k8s_platform_deploy_network.id
   v4_cidr_blocks = ["192.168.10.0/24"]
 }
 
@@ -174,35 +174,7 @@ resource "yandex_kubernetes_node_group" "otus_k8s_platform_deploy_workload_node_
   }
 }
 
-# 7. IP адрес для Ingress
-resource "yandex_vpc_address" "otus_k8s_platform_deploy_ingress_ip" {
-  name = "otus-k8s-platform-deploy-ingress-ip"
-
-  external_ipv4_address {
-    zone_id = "ru-central1-a"
-  }
-}
-
-# 8. Хранилище логов
-
-# 8.1 Access_key для доступа к хранилищу
-resource "yandex_iam_service_account_static_access_key" "otus_k8s_platform_deploy_logs_storage_sa_access" {
-  service_account_id = var.service_account_id
-}
-
-# 8.2 Storage bucket
-resource "yandex_storage_bucket" "otus_k8s_platform_deploy_logs_storage" {
-  bucket = "otus-k8s-platform-deploy-logs-storage"
-  access_key = yandex_iam_service_account_static_access_key.otus_k8s_platform_deploy_logs_storage_sa_access.access_key
-  secret_key = yandex_iam_service_account_static_access_key.otus_k8s_platform_deploy_logs_storage_sa_access.secret_key
-
-  anonymous_access_flags {
-    read = false
-    list = false
-  }
-}
-
-# 9. Получение kubeconfig
+# 7. Получение kubeconfig
 resource "null_resource" "generate_kubeconfig" {
   provisioner "local-exec" {
     command = <<EOT

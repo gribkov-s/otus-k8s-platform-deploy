@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      TF_VAR_cloud_id: ${{ secrets.cloud_id }}
+      # TF_VAR_cloud_id: ${{ secrets.cloud_id }}
       TF_VAR_folder_id: ${{ secrets.folder_id }}
       TF_VAR_service_account_id: ${{ secrets.service_account_id }}
       TF_VAR_four_level_domain: ${{ vars.four_level_domain }}
@@ -26,6 +26,10 @@ jobs:
         run: |
           mkdir keys
           echo "${{ secrets.SERVICE_ACCOUNT_KEY }}" > ./keys/key.json
+          mkdir cluster/keys
+          cp ./keys/key.json ./cluster/keys
+          mkdir infra/keys
+          cp ./keys/key.json ./infra/keys
           
       - name: Install Yandex Cloud CLI
         run: |
@@ -42,10 +46,28 @@ jobs:
       - name: Generate ssh key for k8s nodes
         working-directory: terraform
         run: |
-          ssh-keygen -t ed25519 -f ./keys/ssh_node_group_key  -q -N ""
+          ssh-keygen -t ed25519 -f ./cluster/keys/ssh_node_group_key  -q -N ""
          
-      - name: Terraform Init & Apply
-        working-directory: terraform
+      - name: Deploy K8S cluster with Terraform
+        working-directory: terraform/cluster
+        run: |
+          terraform init
+          terraform apply -auto-approve
+          
+      - name: Copy kubeconfig
+        working-directory: terraform/cluster
+        run: |
+          cp terraform/cluster/kubeconfig.yaml terraform/infra
+          cp terraform/cluster/kubeconfig.yaml terraform/workload
+          
+      - name: Deploy infrastructure with Terraform
+        working-directory: terraform/infra
+        run: |
+          terraform init
+          terraform apply -auto-approve
+          
+      - name: Deploy workload applications with Terraform
+        working-directory: terraform/workload
         run: |
           terraform init
           terraform apply -auto-approve
