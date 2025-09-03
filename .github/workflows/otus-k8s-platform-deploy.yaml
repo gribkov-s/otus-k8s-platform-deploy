@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      # TF_VAR_cloud_id: ${{ secrets.cloud_id }}
       TF_VAR_folder_id: ${{ secrets.folder_id }}
       TF_VAR_service_account_id: ${{ secrets.service_account_id }}
       TF_VAR_four_level_domain: ${{ vars.four_level_domain }}
