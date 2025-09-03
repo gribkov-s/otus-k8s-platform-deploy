@@ -57,8 +57,8 @@ jobs:
       - name: Copy kubeconfig
         working-directory: terraform
         run: |
-          cp kubeconfig.yaml /infra
-          cp kubeconfig.yaml /workload
+          cp kubeconfig.yaml ./infra
+          cp kubeconfig.yaml ./workload
           
       - name: Deploy infrastructure with Terraform
         working-directory: terraform/infra
