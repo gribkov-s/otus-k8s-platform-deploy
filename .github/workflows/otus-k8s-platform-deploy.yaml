@@ -59,6 +59,7 @@ jobs:
         run: |
           cp kubeconfig.yaml ./infra
           cp kubeconfig.yaml ./workload
+          cat kubeconfig.yaml
           
       - name: Deploy infrastructure with Terraform
         working-directory: terraform/infra
